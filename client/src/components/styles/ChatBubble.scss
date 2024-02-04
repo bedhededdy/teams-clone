@@ -1,0 +1,13 @@
+.chat-bubble-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    // min-height: 5%;
+    min-height: 30%; // FIXME: THIS IS JUST FOR TESTING SCROLLING
+    height: 2em;
+    // max-height: 10%;
+}
+
+.chat-bubble-message {
+
+}

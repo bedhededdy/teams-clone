@@ -1,0 +1,8 @@
+.chat-view-container {
+    display: flex;
+    flex-direction: column;
+    height: 90%;
+    width: 100%;
+    background-color: pink;
+    overflow-y: scroll;
+}

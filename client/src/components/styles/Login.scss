@@ -1,0 +1,16 @@
+.login-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; // stops the button from streching to fit the length of the input field
+    width: 100%;
+}
+
+.login-container > input {
+    display: block;
+    margin-bottom: 1em;
+}
+
+.login-container > button {
+    display: block;
+}

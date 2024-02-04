@@ -1,0 +1,2 @@
+# need to use mutli-composition to build the client before serving it
+FROM node:20.11

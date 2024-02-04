@@ -1,0 +1,34 @@
+.message-bar-container {
+    width: 100%;
+    height: 10%;
+    background-color: green;
+}
+
+// FIXME: BAD WAY OF DOING A SELECTOR
+.message-bar-container > div {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+.message-box {
+    border: 2px solid black; // FIXME: LOOKS WEIRD WHEN THE INPUT GETS FOCUSED
+    border-radius: 10px;
+    height: 50%;
+    max-height: 100px;
+    flex: 1;
+    padding: 0;
+}
+
+.send-button {
+    height: 50%;
+    width: 10%;
+    margin-left: 0.5rem;
+    border-radius: 10px;
+    border: 2px solid black; // FIXME: LOOKS WEIRD WHEN THE INPUT GETS FOCUSED
+    min-width: 30px;
+    max-width: 50px;
+}
