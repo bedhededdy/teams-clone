@@ -1,33 +1,43 @@
+// FIXME: FIGURE OUT IF WE CAN ENGINEER SOCKET.IO OUT OF THIS SO WE CAN JUST
+//        USE RAW WEBSOCKETS FOR EVERYTHING AND REDUCE THE DEPENDENCIES
+
 import ws from "ws";
 import http from "http";
-import redis from "redis";
+import { io } from "socket.io-client";
 
-const WEB_SOCKET_PORT = 8080;
+const wsUrl = "ws://localhost:8000"; // This is for connection to web server
+const WEB_SOCKET_PORT = 8080; // This is for client
+
+const userToSocketMap = new Map<string, ws>();
+
+const socket = io(wsUrl);
+socket.on("connection", () => {
+    console.log("Notification service connected to web server");
+});
+socket.on("message", (msg) => {
+    console.log("Received message from web server: ", msg);
+
+    const userId = msg;
+    const userSocket = userToSocketMap.get(userId);
+    userSocket?.send("You got mail");
+});
 
 const httpServer = http.createServer();
 const webSocketServer = new ws.Server({ server: httpServer });
-const redisClient = redis.createClient();
-const pubsub = redisClient.duplicate();
-
-pubsub.subscribe("notification", (err, count) => {
-    if (err) {
-        console.error("Error subscribing to notification channel");
-    }
-});
-
-pubsub.on("message", (channel, message) => {
-    console.log(`Message received: ${message}`);
-    webSocketServer.clients.forEach((client) => {
-        client.send(message);
-    });
-})
 
 webSocketServer.on("connection", (socket) => {
-    console.log("Client connected");
-});
+    console.log("Notification service connected to client");
 
-webSocketServer.on("close", () => {
-    console.log("Client disconnected");
+    // Client should only ever send one message that establishes their identity
+    socket.onmessage = (event) => {
+        console.log("Notification service recieved message from client")
+        const userId = event.data.toString();
+        userToSocketMap.set(userId, socket);
+    }
+
+    socket.onclose = (event) => {
+        console.log("Notification service disconnected from client");
+    }
 });
 
 httpServer.listen(WEB_SOCKET_PORT, () => {

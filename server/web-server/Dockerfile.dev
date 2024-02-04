@@ -1,1 +1,6 @@
-FROM node:20.11
+FROM node:lts-alpine
+WORKDIR /web-server
+COPY package.json package-lock.json ./
+RUN npm install
+COPY . .
+CMD ["npm", "run", "dev"]

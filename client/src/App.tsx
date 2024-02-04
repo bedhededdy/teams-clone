@@ -23,10 +23,11 @@ const App: React.FC<AppProps> = (props) => {
 
     window.webSocket.onopen = (event) => {
       console.log("WebSocket connection established");
+      window.webSocket.send("epinksto"); // Send the user ID
     }
 
     window.webSocket.onmessage = (event) => {
-      console.log("WebSocket message received", event.data?.toString());
+      console.log("WebSocket message received: ", event.data?.toString());
     }
 
     window.webSocket.onclose = (event) => {
@@ -42,7 +43,10 @@ const App: React.FC<AppProps> = (props) => {
   }, []);
 
   const myCallback = () => {
-    fetch("http://localhost:3000/api/test");
+    fetch("http://localhost:3000/api/test?userId=epinksto").then((response) => {
+      if (response.ok)
+        console.log("Response is ok");
+    })
   }
 
   return (

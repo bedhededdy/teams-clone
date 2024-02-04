@@ -12,7 +12,7 @@
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
-    "@types/redis": "^4.0.11",
+    "@types/socket.io": "^3.0.2",
     "nodemon": "^3.0.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
@@ -20,6 +20,9 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.18.2",
-    "redis": "^4.6.12"
+    "socket.io": "^4.7.4"
+  },
+  "nodemonConfig": {
+    "legacyWatch": true
   }
 }
