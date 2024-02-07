@@ -7,9 +7,13 @@ interface MessageBarProps {
 }
 
 const MessageBar: React.FC<MessageBarProps> = (props) => {
+    // FIXME: NEED TO DISABLE THE SEND BUTTON UNTIL THE MESSAGE HAS GONE THRU TO THE SERVER
+    //        (UNTIL WE IMPLEMENT THE WAIT FOR MESSAGE TO SEND WHEN OFFLINE FUNCTIONALITY)
     const messageBoxRef = useRef<HTMLInputElement>(null);
 
     const sendMessageCallback = useCallback(() => {
+        fetch("http://localhost:3000/api/test?userId=epinksto");
+
         messageBoxRef.current!.value = "";
     }, []);
 

@@ -11,53 +11,18 @@ interface AppProps {
   token?: string;
 }
 
-function onBeforeUnload(event: BeforeUnloadEvent) {
-  window.webSocket.close();
-}
-
 const App: React.FC<AppProps> = (props) => {
-  useEffect(() => {
-    // FIXME: SEE IF WE CAN DO WITHOUT ATTACHING TO WINDOW
-    window.webSocketUrl = "ws://localhost:8080";
-    window.webSocket = new WebSocket(window.webSocketUrl);
-
-    window.webSocket.onopen = (event) => {
-      console.log("WebSocket connection established");
-      window.webSocket.send("epinksto"); // Send the user ID
-    }
-
-    window.webSocket.onmessage = (event) => {
-      console.log("WebSocket message received: ", event.data?.toString());
-    }
-
-    window.webSocket.onclose = (event) => {
-      console.log("WebSocket connection closed");
-    }
-
-    window.addEventListener("beforeunload", onBeforeUnload);
-
-    return () => {
-      window.webSocket.close();
-      window.removeEventListener("beforeunload", onBeforeUnload);
-    };
-  }, []);
-
-  const myCallback = () => {
-    fetch("http://localhost:3000/api/test?userId=epinksto").then((response) => {
-      if (response.ok)
-        console.log("Response is ok");
-    })
-  }
+  // FIXME: WE WILL NEED THE MESSAGES NONSENE UP HERE TO HANDLE UPDATING THE SIDEBAR
+  //        BUT FOR NOW WE WILL HAVE IT IN THE CHAT WINDOW
 
   return (
-    <button onClick={myCallback}>Click me</button>
-    // <div className="app-container">
-    //   <Navbar />
-    //   <div className="main-content-container">
-    //     <Sidebar />
-    //     <ChatWindow />
-    //   </div>
-    // </div>
+    <div className="app-container">
+      <Navbar />
+      <div className="main-content-container">
+        <Sidebar />
+        <ChatWindow />
+      </div>
+    </div>
   )
 }
 
