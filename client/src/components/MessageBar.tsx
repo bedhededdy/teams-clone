@@ -4,6 +4,7 @@ import "./styles/MessageBar.scss";
 
 interface MessageBarProps {
     dummy?: string;
+    onMessageSent: (message: string) => void;
 }
 
 const MessageBar: React.FC<MessageBarProps> = (props) => {
@@ -12,7 +13,12 @@ const MessageBar: React.FC<MessageBarProps> = (props) => {
     const messageBoxRef = useRef<HTMLInputElement>(null);
 
     const sendMessageCallback = useCallback(() => {
-        fetch("http://localhost:3000/api/test?userId=epinksto");
+        // fetch("http://localhost:3000/api/test?userId=epinksto");
+
+        // We need to send the message over the websocket
+        const message = messageBoxRef.current!.value;
+        window.webSocket.send(JSON.stringify({ type: "MESSAGE", userId: "epinksto", message }));
+        props.onMessageSent(message);
 
         messageBoxRef.current!.value = "";
     }, []);

@@ -16,13 +16,3 @@ services:
        - "8000:8000"
     volumes:
        - ./server/web-server:/web-server
-  notification-service:
-    build:
-      context: ./server/notification-service
-      dockerfile: Dockerfile.dev
-    ports:
-       - "8080:8080"
-    volumes:
-       - ./server/notification-service:/notification-service
-    depends_on:
-      - web-server

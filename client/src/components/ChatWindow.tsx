@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 
 import ChatView from "./ChatView";
 import MessageBar from "./MessageBar";
@@ -20,12 +20,12 @@ const ChatWindow: React.FC<ChatWindowProps> = (props) => {
 
     useEffect(() => {
         // FIXME: SEE IF WE CAN DO WITHOUT ATTACHING TO WINDOW
-        window.webSocketUrl = "ws://localhost:8080";
+        window.webSocketUrl = "ws://localhost:8000";
         window.webSocket = new WebSocket(window.webSocketUrl);
 
         window.webSocket.onopen = (event) => {
           console.log("WebSocket connection established");
-          window.webSocket.send("epinksto"); // Send the user ID
+          window.webSocket.send(JSON.stringify({type: "IDENTITY", userId: "epinksto"})); // Send the user ID
         }
 
         window.webSocket.onmessage = (event) => {
@@ -34,8 +34,16 @@ const ChatWindow: React.FC<ChatWindowProps> = (props) => {
             //        IS NOT CONSISTENT WITH THE ACTUAL MESSAGES WE GET SINCE
             //        THIS IS NOT INSIDE A HOOK
             // setMessages([...messages, event.data?.toString()]);
-            messagesRef.current = [...messagesRef.current, event.data?.toString()]
-            setMessages(messagesRef.current);
+            // messagesRef.current = [...messagesRef.current, event.data?.toString()]
+
+            // const data = JSON.parse(event.data.toString());
+            // const type = data.type;
+            // if (type === "ACK") {
+
+            // }
+
+            // setMessages(messagesRef.current);
+          console.log("WebSocket message received: ", event.data?.toString());
         }
 
         window.webSocket.onclose = (event) => {
@@ -50,11 +58,15 @@ const ChatWindow: React.FC<ChatWindowProps> = (props) => {
         };
       }, []);
 
+    const onMessageSent = useCallback((message: string) => {
+      messagesRef.current = [...messagesRef.current, message];
+      setMessages(messagesRef.current);
+    }, []);
 
     return (
         <div className="chat-window-container">
             <ChatView messages={messages} />
-            <MessageBar />
+            <MessageBar onMessageSent={onMessageSent} />
         </div>
     )
 }

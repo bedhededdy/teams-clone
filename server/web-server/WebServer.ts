@@ -1,30 +1,54 @@
+import http from "http";
 import express from "express";
 import cors from "cors";
-import { Server } from "socket.io";
+import ws from "ws";
 
 const PORT = 3000;
 const WEB_SOCKET_PORT = 8000;
 
-// FIXME: SEE IF WE CAN NEST THE MESSAGING LOGIC IN THE CONNECTION TO THE SOCKET
-//        TO AVOID THIS VARIABLE
-var glo_socket: any;
-const io = new Server(8000);
-io.on("connection", (socket) => {
-    console.log("Web server connected to notification service");
-    glo_socket = socket;
-})
-
 const app = express();
+const userToSocketMap = new Map<string, ws>();
 
 app.use(cors()); // FIXME: SEE NESCLE FOR OPTIONS
 app.use(express.json());
 
+const httpServer = http.createServer();
+const wss = new ws.Server({ server: httpServer });
 
-app.get("/api/test", (req, res) => {
-    console.log("Message received from client, sending to notification service");
-    glo_socket.emit("message", req.query.userId);
-    res.json({ message: "API has sent a message to the notification service"});
-});
+wss.on("connection", (socket) => {
+    socket.onmessage = ((event: ws.MessageEvent) => {
+        const message = JSON.parse(event.data.toString());
+        const type = message.type;
+        const userId = message.userId;
+        switch (type) {
+        case "IDENTITY":
+            userToSocketMap.set(userId, socket);
+            break;
+        case "MESSAGE":
+            const userSocket = userToSocketMap.get(userId);
+            if (userSocket) {
+                // TODO: SAVE TO DB
+                socket.send(JSON.stringify({ type: "ACK" }))
+            } else {
+                // FIXME: ERROR
+            }
+        default:
+            break;
+        }
+    })
+
+    socket.onopen = () => {
+        console.log("Socket opened");
+    }
+
+    socket.onclose = () => {
+        console.log("Socket closed");
+    }
+
+    socket.onerror = (error) => {
+        console.error("Socket error", error);
+    }
+})
 
 app.get("/", (req, res) => {
     // TODO: SERVE THE SITE
@@ -33,4 +57,8 @@ app.get("/", (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`Web server is running on port ${PORT}`);
+});
+
+httpServer.listen(WEB_SOCKET_PORT, () => {
+    console.log(`Websocket server is running on port ${WEB_SOCKET_PORT}`);
 });
